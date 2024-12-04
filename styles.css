@@ -64,3 +64,11 @@ body {
 .yellow {
     background-color: yellow;
 }
+
+.piece.highlight {
+    border: 2px solid white;
+}
+
+.square.highlight {
+    border: 2px solid yellow;
+}
