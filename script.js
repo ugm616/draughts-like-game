@@ -93,11 +93,41 @@ document.addEventListener('DOMContentLoaded', () => {
         const squares = document.getElementsByClassName('square');
         const index = Array.from(squares).indexOf(square);
         const moves = [];
-        // Example logic for valid moves (modify as needed)
-        if (index % 16 !== 0) moves.push(squares[index - 1]); // left
-        if (index % 16 !== 15) moves.push(squares[index + 1]); // right
-        if (index >= 16) moves.push(squares[index - 16]); // up
-        if (index < 240) moves.push(squares[index + 16]); // down
+
+        // Diagonal moves
+        if (index >= 16 && index % 16 !== 0) moves.push(squares[index - 17]); // up-left
+        if (index >= 16 && index % 16 !== 15) moves.push(squares[index - 15]); // up-right
+        if (index < 240 && index % 16 !== 0) moves.push(squares[index + 15]); // down-left
+        if (index < 240 && index % 16 !== 15) moves.push(squares[index + 17]); // down-right
+
+        // Orthogonal moves if one square away from item or enemy piece
+        const orthogonalMoves = [];
+        if (index % 16 !== 0) orthogonalMoves.push(squares[index - 1]); // left
+        if (index % 16 !== 15) orthogonalMoves.push(squares[index + 1]); // right
+        if (index >= 16) orthogonalMoves.push(squares[index - 16]); // up
+        if (index < 240) orthogonalMoves.push(squares[index + 16]); // down
+
+        const isOneSquareAwayFromItemOrEnemyPiece = (orthogonalMove) => {
+            const adjacentIndices = [
+                index - 17, index - 15, index + 15, index + 17,
+                index - 1, index + 1, index - 16, index + 16
+            ];
+            return adjacentIndices.some(adjIndex => {
+                const adjSquare = squares[adjIndex];
+                if (!adjSquare) return false;
+                return adjSquare.querySelector('.item') || (
+                    adjSquare.querySelector('.piece') &&
+                    adjSquare.querySelector('.piece').dataset.player !== currentPlayer
+                );
+            });
+        };
+
+        orthogonalMoves.forEach(move => {
+            if (isOneSquareAwayFromItemOrEnemyPiece(move)) {
+                moves.push(move);
+            }
+        });
+
         return moves.filter(sq => !sq.querySelector('.piece'));
     }
 
