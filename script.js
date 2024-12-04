@@ -100,14 +100,14 @@ document.addEventListener('DOMContentLoaded', () => {
         if (index < 240 && index % 16 !== 0) moves.push(squares[index + 15]); // down-left
         if (index < 240 && index % 16 !== 15) moves.push(squares[index + 17]); // down-right
 
-        // Orthogonal moves if one square away from item or enemy piece
+        // Orthogonal moves if one square away from item or enemy piece, but not if one square away from friendly piece
         const orthogonalMoves = [];
         if (index % 16 !== 0) orthogonalMoves.push(squares[index - 1]); // left
         if (index % 16 !== 15) orthogonalMoves.push(squares[index + 1]); // right
         if (index >= 16) orthogonalMoves.push(squares[index - 16]); // up
         if (index < 240) orthogonalMoves.push(squares[index + 16]); // down
 
-        const isOneSquareAwayFromItemOrEnemyPiece = (orthogonalMove) => {
+        const isOneSquareAwayFromItemOrPiece = (orthogonalMove) => {
             const adjacentIndices = [
                 index - 17, index - 15, index + 15, index + 17,
                 index - 1, index + 1, index - 16, index + 16
@@ -115,15 +115,24 @@ document.addEventListener('DOMContentLoaded', () => {
             return adjacentIndices.some(adjIndex => {
                 const adjSquare = squares[adjIndex];
                 if (!adjSquare) return false;
-                return adjSquare.querySelector('.item') || (
-                    adjSquare.querySelector('.piece') &&
-                    adjSquare.querySelector('.piece').dataset.player !== currentPlayer
-                );
+                return adjSquare.querySelector('.item') || adjSquare.querySelector('.piece');
+            });
+        };
+
+        const isOneSquareAwayFromFriendlyPiece = (orthogonalMove) => {
+            const adjacentIndices = [
+                index - 1, index + 1, index - 16, index + 16
+            ];
+            return adjacentIndices.some(adjIndex => {
+                const adjSquare = squares[adjIndex];
+                if (!adjSquare) return false;
+                const piece = adjSquare.querySelector('.piece');
+                return piece && piece.dataset.player === currentPlayer;
             });
         };
 
         orthogonalMoves.forEach(move => {
-            if (isOneSquareAwayFromItemOrEnemyPiece(move)) {
+            if (isOneSquareAwayFromItemOrPiece(move) && !isOneSquareAwayFromFriendlyPiece(move)) {
                 moves.push(move);
             }
         });
