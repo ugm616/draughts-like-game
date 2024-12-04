@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM fully loaded and parsed');
     const board = document.getElementById('board');
     const startGameButton = document.getElementById('start-game');
     const player1ColorSelect = document.getElementById('player1-color');
@@ -21,6 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 square.addEventListener('click', handleSquareClick);
                 board.appendChild(square);
+                console.log('Square created at row:', row, 'col:', col);
             }
         }
     }
@@ -33,12 +35,14 @@ document.addEventListener('DOMContentLoaded', () => {
             player1Piece.dataset.player = 'player1';
             player1Piece.textContent = '1';
             squares[i].appendChild(player1Piece);
+            console.log('Player 1 piece placed at index:', i);
 
             const player2Piece = document.createElement('div');
             player2Piece.classList.add('piece', player2Color);
             player2Piece.dataset.player = 'player2';
             player2Piece.textContent = '1';
             squares[255 - i].appendChild(player2Piece);
+            console.log('Player 2 piece placed at index:', 255 - i);
         }
     }
 
@@ -78,6 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const currentSquare = piece.parentNode;
         validMoves = getValidMoves(currentSquare);
         validMoves.forEach(square => square.classList.add('highlight'));
+        console.log('Piece selected. Valid moves:', validMoves);
     }
 
     function clearHighlights() {
